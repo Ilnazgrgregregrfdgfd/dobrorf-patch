@@ -4,6 +4,7 @@ import { ContextApp } from '../../context';
 
 export const Modal = () => {
   const { setOpenSV } = React.useContext(ContextApp);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [formData, setFormData] = React.useState({
     name: '',
     phone: '',
@@ -16,6 +17,7 @@ export const Modal = () => {
     message: '',
     agreement: '',
   });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -29,6 +31,7 @@ export const Modal = () => {
       }));
     }
   };
+
   const handleCheckboxChange = (e) => {
     setIsAgreed(e.target.checked);
     if (errors.agreement) {
@@ -38,6 +41,7 @@ export const Modal = () => {
       }));
     }
   };
+
   const validateForm = () => {
     const newErrors = {
       name: '',
@@ -81,14 +85,53 @@ export const Modal = () => {
     return isValid;
   };
 
+  const sendToServer = async () => {
+    const submissionData = {
+      name: formData.name.trim(),
+      phone: formData.phone.trim(),
+      message: formData.message.trim(),
+      isAgreed: isAgreed,
+      submittedAt: new Date().toISOString(),
+    };
+
+    try {
+      const response = await fetch('http://localhost:5000/api/submit-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        return { success: true, data: data.data };
+      } else {
+        console.error('Server error:', data);
+        return { success: false, error: data.error || 'Ошибка при отправке' };
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      return { success: false, error: error.message };
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      const result = await sendToTelegram();
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const result = await sendToServer();
+
       if (result.success) {
-        console.log(formData.name, formData.phone, formData.message, isAgreed);
-        alert('Форма отправлена');
+        alert('Форма успешно отправлена!');
+
         setFormData({
           name: '',
           phone: '',
@@ -100,42 +143,13 @@ export const Modal = () => {
           setOpenSV(false);
         }, 1000);
       } else {
-        console.error(result.error);
-      }
-    }
-  };
-
-  const BotToken = '8622421670:AAGsPaNIo4XDLLXX1CY6ilYgfMZG8S9MWQs';
-  const idChat = '1129401738';
-  const sendToTelegram = async () => {
-    const message = `Имя: ${formData.name}\nТелефон: ${formData.phone}\nСообщение: ${formData.message}\nВремя: ${new Date().toLocaleString()}`;
-
-    const url = `https://api.telegram.org/bot${BotToken}/sendMessage`;
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chat_id: idChat,
-          text: message,
-          parse_mode: 'HTML',
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.ok) {
-        return { success: true };
-      } else {
-        console.error('Telegram error:', data);
-        return { success: false, error: data.description };
+        alert(`Ошибка: ${result.error}`);
       }
     } catch (error) {
-      console.error('Network error:', error);
-      return { success: false, error: error.message };
+      console.error('Submit error:', error);
+      alert('Произошла ошибка при отправке. Пожалуйста, попробуйте позже.');
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
