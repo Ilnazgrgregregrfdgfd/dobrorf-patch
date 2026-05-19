@@ -19,7 +19,7 @@ export const Ideas = () => {
   const ITEMS_PER_PAGE = 2;
 
   const getApiBaseUrl = () => {
-    return process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+    return process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
   };
 
   // Отправка новой идеи
