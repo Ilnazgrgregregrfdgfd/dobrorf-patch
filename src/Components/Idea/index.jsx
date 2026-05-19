@@ -17,7 +17,7 @@ export const Idea = () => {
   const [voteMessage, setVoteMessage] = useState('');
   const [alreadyVoted, setAlreadyVoted] = useState(false);
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+  const API_URL = process.env.REACT_APP_API_URL || '/api';
 
   const normalizePhone = (value) => value.replace(/\D/g, '');
   const isValidPhone = (value) => {
