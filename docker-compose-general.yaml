@@ -3,6 +3,7 @@ version: '3.8'
 services:
   nginx:
     image: nginx:alpine
+    restart: unless-stoppped
     ports:
       - "80:80"
     volumes:
@@ -15,6 +16,7 @@ services:
     build: 
       context: ./dobrorf-patch
       dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
       - CHOKIDAR_USEPOLLING=true
       - PORT=3001
@@ -28,6 +30,7 @@ services:
     build: 
       context: ./dobrorf-back
       dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
       - PORT=5001
       - MONGODB_URI=mongodb://mongo:27017/dobrorf
