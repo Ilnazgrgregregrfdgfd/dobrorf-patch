@@ -68,3 +68,13 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+# Как запустить
+
+Поместить каталог с фронт и бэк в одну директрию
+
+Перенести с каталога dobrorf-patch файл "docker-compose-general.yaml" в предыдущий каталог
+
+Переименовать файл "docker-compose-general.yaml" в "docker-compose.yaml"
+
+Запустить docker-compose.yaml
